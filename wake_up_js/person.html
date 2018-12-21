@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>underscore.js</title>
+</head>
+
+<body>
+</body>
+
+</html>
+
+<script>
+    //オブジェクトを生成する2つの方法。
+
+    //Object()コンストラクタを使ってtakaAを生成
+    var takaA = new Object(); //(var takaA = {};と同等)
+
+    takaA.living = true;
+    takaA.age = 24;
+    takaA.gender = 'male';
+    takaA.getGender = function () {
+        return takaA.gender;
+    };
+
+    //オブジェクトリテラル記法
+    var takaX = {
+        living: true,
+        age: 33,
+        gender: 'male',
+        getGender: function () {
+            return takaX.gender;
+        }
+    }; //最後のプロパティの後ろにはカンマをつけないことに注意。＋プロパティ名を''で文字列化したほうがよいときもある。
+
+    console.log(takaA);
+    console.log(takaA.getGender());
+
+    //上の例と同じオブジェクトを生成するが、Objectコンストラクタで一度きりのtakaを生成するのではなく、最初にtakaオブジェクト（もしくは他のpersonオブジェクト）を生成するperson()コンストラクタ「カスタムコンストラクタ」を定義し、newを使ってインスタンス化する。
+    //これが、この違いがすなわちクラス？？
+    var Person = function (living, age, gender) {
+        this.living = living;
+        this.age = age;
+        this.gender = gender;
+        this.getGender = function () {
+            return this.gender;
+        };
+    };
+    //コンストラクタ関数とは、デフォルトのプロパティとメソッドを持ったオブジェクトを生成するための切り抜き、クッキー型。
+
+    var takaB = new Person(true, 24, 'male');
+    console.log(takaB);
+    console.log(takaB.getGender());
+
+
+    //takaBはオブジェクトで、person()コンストラクタ関数のインスタンスである。
+    console.log(typeof takaB);
+    console.log(takaB.constructor); //person関数そのものを出力。
+    //この例ではユーザー定義のコンストラクタ関数(つまりperson())を使用し、codyオブジェクトを生成している。これはArray()コンストラクタがArrayオブジェクトを生成すること(例えば、new Array())となんら変わりません。
+    //myArrayという配列オブジェクトのインスタンスを生成する。
+    var myArray = new Array(); // myArrayは配列のインスタンス
+    //myArrayはオブジェクトであり、Arrayコンストラクタのインスタンス。
+    console.log(typeof myArray); //Object
+    console.log(myArray); //[]
+    console.log(myArray.constructor); //Array()
+
+    //コンストラクタから返されたオブジェクトはインスタンスを呼ばれます。(new演算子を使って返す)
+    //通常の関数との混同を避けるため、new演算子とともに記述されることを想定して生成するカスタムコンストラクタ関数は最初を大文字にする。(コンストラクタ関数のトリッキーな部分は、関数内でthisを利用する場合です。コンストラクタ関数はクッキーの型抜きのようなものであることを思い出せ。)
+
+    //リテラルを使って値を生成
+    var myObject = new Object();
+    var myObjectLiteral = {};
+
+    var myArray = new Array('foo', 'bar');
+    var myArrayLiteral = ['foo', 'bar'];
+
+    var myFunction = new Function("x", "y", "return x*y");
+    var myFunctionLiteral = function (x, y) {
+        return x * y
+    };
+    console.log(myFunction, myFunctionLiteral);
+
+    //オブジェクトはどのように保存、複製されるか
+    var myObject = {};
+    var copyOfMyObject = myObject; //値が渡されるのではなく参照が渡される。
+    myObject.foo = 'bar';
+    console.log(myObject, copyOfMyObject);
+    //この２つの変数は同じオブジェクトを参照しているので、一方を変更するともの片方にも反映されるという点、プリミティブ値の値をそのまま複製するのとは異なる。.同じ値をもっていても参照が違うと同値＝＝＝とはならない
+
+    var sameval1 = {
+        same: 'same'
+    };
+    var sameval2 = {
+        same: 'same'
+    };
+    console.log(sameval1 === sameval2);
+    console.log(sameval1 == sameval2);
+
+    //プロトタイプチェーン目の当たり
+    let useProtType = ['foo', 'bar'];
+    console.log(useProtType.join); //動作する
+    //なぜなら、useProtType.joinは実際にはArray.prototype.joinで定義されている。
+    console.log(useProtType.hasOwnProperty('join')); //false - useProtType自身はjoinプロパティを持っていない。
+
+    //for-inループを使用してプロパティを列挙する。
+    for (var key in takaA) {
+        if (takaA.hasOwnProperty(key)) {
+            console.log(key);
+
+        }
+
+    }
+
+    //windowオブジェクトのなかにあるホストオブジェクトたち
+    for (var x in window) {
+        console.log(x);
+
+    }
+
+    for (var x in window.document) {
+        console.log(x);
+
+    }
+
+    //関数(Function())  用途 計算値を返す、オブジェクト(広義)の生成、単純にコードを動作させたり。(一番基本的な形は独自のスコープを持った実行可能な文の集まりです？)
+    let addNumbers = function (num1, num2) {
+        return num1 + num2;
+    };
+    console.log(addNumbers(2, 3));
+    //関数が戻り値を指定していない場合、undefinedが返されます。なぜなら全ての関数は値を返すからです。
+    let yelp = function () {
+        console.log('i am yelping');
+
+    };
+    console.log(yelp === undefined); //trueを返す。
+    //javascriptの関数は第一級関数=オブジェクトである。(つまり関数も「値」である)
+
+    //関数は、変数、配列、オブジェクトに格納できる
+    let funcA = function () {};
+    let funcB = [function () {}];
+    let funcC = {
+        method: function () {}
+    };
+
+    //関数は引数として関数に渡したり、戻り値にすることができる
+    let funcD = function (func) {
+        return func;
+    };
+
+    //関数はオブジェクトなのでプロパティももつことができる。
+    let funcF = function () {};
+    funcF.answer = 'yup'; //インスタンスプロパティ?
+    console.log(funcF.answer);
+
+    //thisとargumentsはすべての関数本体（スコープ内）で利用できる。
+    //thisはすべての関数に渡され、実行中の関数を保持しているオブジェクトを参照します！ オブジェクトにメソッドとして格納されている関数では、thisを使うことによってその「親」オブジェクトの参照を得ることができます。関数がグローバルスコープで呼び出されている場合は、thisはグローバルオブジェクトになります。
+    var myObject1 = {
+        name: 'myObject1',
+        myMethod: function () {
+            console.log(this.name);
+        }
+    };
+    myObject1.myMethod(); //出力：'myObject1'
+
+    var myObject2 = function () {
+        console.log(this);
+    };
+    myObject2(); //出力：window(もしくはグローバルオブジェクト)
+
+    //argumentsについて(p67)
+    let add = function () {
+        return arguments[0] + arguments[1];
+    };
+    console.log(add(4, 4));
+
+
+
+    var add4 = function () {
+        var total = 0;
+        for (var i = 0; i < arguments.length; i++) {
+            total += arguments[i];
+        }
+        return total;
+    };
+
+    console.log(add4(1, 2, 3, 4));
+
+    //関数の実行を中断（ 関数の実行中にreturn文を宣言することにより、 戻り値のあるなしに関わらずいつでも関数の実行を終了することができる。）
+    let add5 = function (x, y) {
+        if (typeof x !== 'number' || typeof y !== 'number') {
+            return false; //または文字列messageを返して関数を終了
+        }
+        return x + y;
+    };
+
+    //関数の定義方法（宣言、式、もしくはコンストラクタ)
+    //名前付き関数式 = 関数式＋関数宣言(無名関数)
+    var additional = function add(x, y) {
+        return x + y;
+    };
+
+    //関数の実行方法p71(callとapplyわかってない)
+
+    //グローバルスコープに設定されているものはすべてのスコープからアクセスできる。そのためこれらはグローバル変数やグローバルプロパティと呼ばれる（スコープチェーン）
+
+    //thisとは、スコープ内で有効な値で、実行中の関数をプロパティもしくはメソッドとして保持しているオブジェクトへの参照です。
+    //すべての関数に渡されるthisの値は、関数が実行時に呼び出される際の「状況」に依存します。
+    var foo = 'foo';
+    var myObject = {
+        foo: 'i am myobject.foo'
+    };
+
+    var sayFoo = function () {
+        console.log(this['foo']);
+    };
+
+    myObject.sayFoo = sayFoo; //myObjectのsayFooメソッドにsayFoo()関数を代入
+
+    myObject.sayFoo(); //親はmyObjectなので'i am ~'を出力
+    sayFoo(); //sayFoo内でのthisはグローバルオブジェクトなので'foo'を出力
+    //これすごいthisわかる(同じ関数をポイントにしていても、関数が呼び出される状況によってthisの値が異なる。)
+
+    //new演算子を使ってコンストラクタ関数を呼び出さないと、thisの値はコンストラクタ関数内で新たに生成されるインスタンスを参照しません！
+    var Person4 = function (name) {
+        this.name = name || 'john'
+    };
+
+    var cody4 = Person4('cody lindy');
+    //cody.nameはundefinedのため、エラーになる
+    //console.log(cody4.name);
+    //この場合のthisはグローバルオブジェクトなので、
+    console.log(window.name); //'cody lindy'
+
+    //コンストラクタのprototypeに追加された関数を実行する際、そのプロトタイプ関数内のthisはメソッドが呼ばれたインスタンスを参照する？p93
+
+    //スコープについて
+    var foo40 = 0; //グローバル変数
+    console.log(foo40); //出力：０
+
+    var myFunction = function () {
+
+        var foo40 = 1; //ローカルスコープ
+        console.log(foo40); //出力：１
+
+        var myNestedFunction = function () {
+            //ここではローカルスコープにfooを定義しない
+            console.log(foo40); //入れ子の外の関数のfooを参照するため、１を出力
+
+        };
+    };
+
+    //スコープチェーン：入れ子の外側の関数で定義された変数には入れ子の内側からアクセスすることが可能となります。したがって、入れ子の一番外側（グローバルスコープ）で定義された変数にはどこからでもアクセスすることが可能です。//ifやforなどのブロックはスコープが存在しないため、上書きされてしまう。
+    var x7 = 10;
+    var func7 = function () {
+        var x8 = 20;
+        var func8 = function () {
+            var x9 = 30;
+            console.log(x7 + x8 + x9); //出力60
+
+        };
+
+    };
+
+    //スコープは関数実行時ではなく関数定義時に決められる、スコープチェーンは関数定義時の場所に基づいて決定される(静的スコープ)
+    var parentFunction = function () {
+        var foo = 'foo';
+        return function () { //無名関数を返す
+            console.log(foo);
+
+        }
+    };
+    //nestedFunctionはparentFunction()が返す無名関数を参照
+    var nestedFunction = parentFunction();
+    nestedFunction(); //出力:'foo' -parentFunction()スコープに定義された変数にグローバルスコープからアクセスしている。 定義済みの関数を別のスコープの変数に渡しても、スコープチェーンは変わりません。
+
+    var countUpFromZero = function () {
+        var count = 0;
+        return kaki = function () {
+            return count = count + 1;
+        };
+    }; //この関数は呼ばれると即時実行し、無名関数を返す。
+    countUpFromZero();
+    kaki();
+    console.log(kaki());
+    console.log(kaki());
+    //console.log(countUpFromZero());
+    //countUpFromZero()に返された子関数はその親関数の変数countにアクセスする必要があるため、それを保持するcountUpFromZero()を実行するたびにreturn ++countが実行される。
+
+    var logElem = function () {
+        var funcArray = [];
+        var i;
+        for (i = 0; i < 5; i++) {
+            funcArray[i] = function () {
+                console.log(i);
+            };
+        }
+        return funcArray;
+    }();
+
+    console.log(logElem); //なるほど、funcArrayが返されるんじゃなくて、funcArrayの値（中身＝[]）が返されるのか。
+    logElem[0](); //わかったこの書きかたOKなのは、returnはグローバルに値(展開したもの)を投げ出すんじゃなく(ただgakiも有効なんだよなぁgakiはグローバルにいる、funcArrayはいなかった)、ひとつ前の階層（ここでいうlogElem）に投げてるからこの書き方になるのか！上もそうだった
+
+    var logElementNumber = function () {
+        var funcArray = [];
+        var i;
+        var func = function (i) {
+            return function () {
+                console.log(i);
+            };
+        };
+
+        for (i = 0; i < 3; i++) {
+            funcArray[i] = func(i);
+        }
+        return funcArray;
+    }();
+    //p105あたり、クロージャー全然わかんねぇ
+
+    //プロトタイプチェーン（継承）について
+    var myArray91 = new Array('foo', 'bar');
+    console.log(myArray91.join()); //出力'foo,bar'
+    //joinメソッドはmyArrayインスタンスでは定義されていないが、アクセスできる、Arrayコンストラクタのprototypeプロパティに定義されているから。
+    //継承は、再利用性と効率のため！！すべてのインスタンスが共通のprototypeからプロパティを継承する。
+
+    Array.prototype.foo = '継承'; //Array()のすべてのインスタンスが継承する
+    var myArray19 = new Array();
+    console.log(myArray19.constructor.prototype.foo); //または
+    console.log(myArray19.__proto__.foo);
+
+    //ようやくnewの意味がわかったかもしれん
+    var Foo = function Foo() {};
+    Foo.prototype = {}; //prototypeプロパティを空のオブジェクトに置き換える
+    var fooInstance = new Foo();
+    console.log(fooInstance.constructor === Foo); //参照が破壊されているため出力：false
+    console.log(fooInstance.constructor); //出力：object()
+    Foo.prototype.x = 1; //xプロパティを追加
+    console.log(fooInstance.x); //動的に追加変更されている
+
+
+    //prototypeプロパティを置き換えない場合と比較
+    var Bar = function Bar() {};
+    var barInstance = new Bar();
+    console.log(barInstance.constructor === Bar); //出力：true
+    console.log(barInstance.constructor); //出力：Bar()
+
+    //ユーザー定義コンストラクタもプロトタイプ継承を行える
+    var Person74 = function () {};
+    Person74.prototype.rank = '初級'
+    Person74.prototype.getStatus = function () {
+        return 'レベル' + this.rank;
+    };
+    var Luffy = new Person74();
+    console.log(Luffy.getStatus());
+    //まあこの場合引数に指定すればこんなこと多分しなくていいと思う
+    //強制継承チェーンを生成することもあるp121 例  ~.prototype = new Person();「~インスタンスにおいてプロパティが見つからない場合Personオブジェクトを探しにいくようリンクさせている、これは空のオブジェクトに更新したやり方と全く一緒」
+</script>
